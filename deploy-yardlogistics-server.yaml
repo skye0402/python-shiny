@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: yardlogistics
+  labels:
+    istio-injection: enabled
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: yardlogistics-app
+  namespace: yardlogistics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yardlogistics-app
+  template:
+    metadata:
+      labels:
+        app: yardlogistics-app
+    spec:
+      containers:
+        - name: yardlogistics-app
+          image: 'gunter04/yardlogistics-server:1.0'
+          ports:
+            - name: shiny-port
+              containerPort: 8000
+              protocol: TCP
+            - name: rest-port
+              containerPort: 5000
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: yardlogistics-service
+  namespace: yardlogistics
+  labels:
+    app: yardlogistics-app
+spec:
+  ports:
+    - name: shiny-port
+      protocol: TCP
+      port: 8000
+      targetPort: shiny-port
+    - name: rest-port
+      protocol: TCP
+      port: 5000
+      targetPort: rest-port
+  selector:
+    app: yardlogistics-app
+  type: ClusterIP
+---
+apiVersion: gateway.kyma-project.io/v1alpha1
+kind: APIRule
+metadata:
+  name: yardlogistics-rest-apirule
+  namespace: yardlogistics
+  labels:
+    app.kubernetes.io/name: yardlogistics-rest-apirule
+spec:
+  gateway: kyma-gateway.kyma-system.svc.cluster.local
+  rules:
+    - accessStrategies:
+        - handler: allow
+          config: {}
+      methods:
+        - POST
+      path: /.*
+  service:
+    host: dlylapi.c-290ae5b.kyma.shoot.live.k8s-hana.ondemand.com
+    name: yardlogistics-service
+    port: 5000
+

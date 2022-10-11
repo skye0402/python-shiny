@@ -1,0 +1,7 @@
+{
+    "SAP HANA Database Explorer.displaySapWebAnalyticsStartupNotification": false,
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportUnusedFunction": "none"
+    }
+}
