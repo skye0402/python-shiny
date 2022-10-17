@@ -30,7 +30,7 @@ spec:
             - name: rest-port
               containerPort: 5000
               protocol: TCP
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
       restartPolicy: Always
 ---
 kind: Service
